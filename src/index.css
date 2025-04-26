@@ -1,92 +1,91 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light theme */
+    --background: 260 60% 99%;
+    --foreground: 260 10% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 10% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 260 10% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 260 84% 55%; /* Purple */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 260 30% 95%;
+    --secondary-foreground: 260 50% 40%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 260 30% 95%;
+    --muted-foreground: 260 10% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 260 30% 95%;
+    --accent-foreground: 260 50% 40%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 260 30% 90%;
+    --input: 260 30% 90%;
+    --ring: 260 84% 55%;
 
     --radius: 0.5rem;
 
+    /* Sidebar */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark theme */
+    --background: 260 30% 8%;
+    --foreground: 260 10% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 30% 12%;
+    --card-foreground: 260 10% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 30% 12%;
+    --popover-foreground: 260 10% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 260 80% 70%; /* Lighter Purple for dark mode */
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 260 30% 25%;
+    --secondary-foreground: 260 10% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 30% 25%;
+    --muted-foreground: 260 10% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 260 30% 25%;
+    --accent-foreground: 260 10% 90%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 260 30% 25%;
+    --input: 260 30% 25%;
+    --ring: 260 80% 70%;
+
+    /* Sidebar */
+    --sidebar-background: 240 30% 10%;
+    --sidebar-foreground: 240 10% 90%;
+    --sidebar-primary: 224 76.3% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 240 30% 20%;
+    --sidebar-accent-foreground: 240 10% 90%;
+    --sidebar-border: 240 30% 20%;
+    --sidebar-ring: 217.2 91.2% 70%;
   }
 }
 
@@ -97,5 +96,96 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg;
+  }
+
+  .dark .glass {
+    @apply bg-gray-900/30 backdrop-blur-lg border border-white/10 rounded-lg;
+  }
+
+  /* For RTL support */
+  .rtl {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+/* Custom animations */
+@layer utilities {
+  .animate-on-scroll {
+    @apply opacity-0 translate-y-10 transition-all duration-700;
+  }
+  
+  .animate-on-scroll.show {
+    @apply opacity-100 translate-y-0;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-purple-500/20;
+  }
+
+  .btn-hover {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30;
+  }
+
+  .btn-hover::before {
+    @apply content-[''] absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-700;
+  }
+
+  .btn-hover:hover::before {
+    @apply left-[100%];
+  }
+}
+
+/* Particles canvas */
+#tsparticles {
+  @apply fixed inset-0 -z-10;
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Project card hover effect */
+.project-card {
+  @apply relative overflow-hidden rounded-lg;
+}
+
+.project-card::before {
+  @apply content-[''] absolute inset-0 bg-gradient-to-b from-transparent to-black/70 opacity-0 transition-opacity duration-300;
+}
+
+.project-card:hover::before {
+  @apply opacity-100;
+}
+
+.project-card .project-content {
+  @apply absolute bottom-0 left-0 w-full p-6 translate-y-full transition-transform duration-300;
+}
+
+.project-card:hover .project-content {
+  @apply translate-y-0;
+}
+
+/* Progress bar animation */
+.progress-bar {
+  @apply relative h-2 w-full bg-muted rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply absolute h-full bg-primary rounded-full left-0 origin-left transform-gpu;
+  transition: transform 1.5s ease;
 }
