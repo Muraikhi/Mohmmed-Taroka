@@ -157,7 +157,7 @@ export default function Navbar({
           </span>
         </Link>
 
-        {/* Desktop Navigation - Now using NavigationMenu */}
+        {/* Desktop Navigation - Now using NavigationMenu with custom active styles */}
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList>
@@ -169,10 +169,12 @@ export default function Navbar({
                       navigationMenuTriggerStyle(),
                       "flex items-center gap-1.5",
                       location.pathname === item.href
-                        ? "bg-primary text-primary-foreground"
-                        : ""
+                        ? "bg-primary text-primary-foreground" 
+                        : "data-[active]:bg-transparent data-[state=open]:bg-transparent"
                     )}
-                    style={location.pathname === item.href ? { backgroundColor: primaryColor } : {}}
+                    style={location.pathname === item.href 
+                      ? { backgroundColor: primaryColor } 
+                      : {}}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <item.icon className="h-4 w-4" />
