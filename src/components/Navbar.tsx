@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Languages, User, Menu, Settings, Home, Code, GameController, Phone } from "lucide-react";
+import { Moon, Sun, Languages, User, Menu, Settings, Home, Code, Gamepad, Phone } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -42,7 +42,7 @@ const navItems: NavItem[] = [
   {
     label: { en: "Game", ar: "اللعبة" },
     href: "/game",
-    icon: GameController,
+    icon: Gamepad,
   },
   {
     label: { en: "Contact", ar: "اتصل بي" },

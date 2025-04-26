@@ -14,6 +14,7 @@ interface ProjectCardProps {
   githubLink?: string;
   demoLink?: string;
   language: "en" | "ar";
+  technologies?: string[];  // Add technologies as an optional prop
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -25,7 +26,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   githubLink,
   demoLink,
   language,
+  technologies,
 }) => {
+  // Use technologies if provided, otherwise fall back to tags
+  const displayTags = technologies || tags;
+  
   return (
     <div 
       className="project-card group card-hover"
@@ -43,7 +48,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <p className="text-white/80 text-sm line-clamp-2 mb-3">{description}</p>
           
           <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag, index) => (
+            {displayTags.map((tag, index) => (
               <span 
                 key={index} 
                 className="text-xs px-2 py-1 rounded-full bg-white/20 text-white"

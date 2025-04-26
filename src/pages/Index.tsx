@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -97,7 +96,6 @@ const Index = () => {
     return savedImages ? JSON.parse(savedImages) : [];
   });
   
-  // Example skills data
   const skills = [
     { name: language === "en" ? "Frontend Development" : "تطوير الواجهة الأمامية", percentage: 90 },
     { name: language === "en" ? "Graphic Design" : "تصميم الجرافيك", percentage: 85 },
@@ -105,7 +103,6 @@ const Index = () => {
     { name: language === "en" ? "UI/UX Design" : "تصميم واجهة المستخدم", percentage: 75 }
   ];
   
-  // Listen for changes in settings and projects
   useEffect(() => {
     const handleSettingsChange = () => {
       const savedSettings = localStorage.getItem('siteSettings');
@@ -126,7 +123,6 @@ const Index = () => {
     
     window.addEventListener('storage', handleSettingsChange);
     
-    // Also check periodically
     const interval = setInterval(() => {
       const savedSettings = localStorage.getItem('siteSettings');
       if (savedSettings) {
@@ -161,7 +157,6 @@ const Index = () => {
 
   return (
     <div dir={language === "ar" ? "rtl" : "ltr"}>
-      {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-16">
         <div className="container mx-auto px-4 py-16 flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 space-y-8">
@@ -272,7 +267,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
           <span className="block mb-2 text-sm text-muted-foreground">
             {language === "en" ? "Scroll Down" : "انزل للأسفل"}
@@ -284,7 +278,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About Section Preview */}
       <section 
         className="py-20" 
         style={{ backgroundColor: `${settings.theme.primary}05` }}
@@ -351,7 +344,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Image Gallery - From uploaded images */}
       {homeImages.length > 0 && (
         <section className="py-20">
           <div className="container mx-auto px-4">
@@ -387,7 +379,6 @@ const Index = () => {
         </section>
       )}
 
-      {/* Featured Projects */}
       {projects.length > 0 && (
         <section className="py-20">
           <div className="container mx-auto px-4">
@@ -405,7 +396,11 @@ const Index = () => {
                   key={project.id} 
                   delay={index * 200}
                 >
-                  <ProjectCard {...project} language={language} />
+                  <ProjectCard 
+                    {...project} 
+                    language={language} 
+                    tags={project.technologies || []}
+                  />
                 </ScrollReveal>
               ))}
             </div>
@@ -430,7 +425,6 @@ const Index = () => {
         </section>
       )}
 
-      {/* CTA Section */}
       <section 
         className="py-20 text-white"
         style={{ backgroundColor: settings.theme.primary }}
