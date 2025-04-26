@@ -1,7 +1,6 @@
-
 import React, { useCallback } from "react";
 import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
+import { loadSlim } from "tsparticles-slim/es2015";
 import type { Container, Engine } from "tsparticles-engine";
 
 interface ParticlesBackgroundProps {
