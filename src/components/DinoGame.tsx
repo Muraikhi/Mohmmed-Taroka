@@ -192,11 +192,15 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
     if (!gameStarted) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.code === 'Space' || e.key === ' ' || e.code === 'ArrowUp') && 
-          !playerRef.current.jumping && 
-          playerRef.current.y >= groundYRef.current - playerRef.current.height) {
-        playerRef.current.jumping = true;
-        playerRef.current.jumpCount = 0;
+      // Prevent default space bar behavior to avoid page scrolling
+      if (e.code === 'Space' || e.key === ' ' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        
+        if (!playerRef.current.jumping && 
+            playerRef.current.y >= groundYRef.current - playerRef.current.height) {
+          playerRef.current.jumping = true;
+          playerRef.current.jumpCount = 0;
+        }
       }
     };
 
