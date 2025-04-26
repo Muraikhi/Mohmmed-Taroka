@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +50,7 @@ interface Project {
   image: string;
   technologies: string[];
   link?: string;
+  tags?: string[];
 }
 
 interface Certificate {
@@ -218,7 +220,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
   const addNewProject = (project: Omit<Project, 'id'>) => {
     const newProject = {
       ...project,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      tags: project.tags || [] // Ensure tags is always defined
     };
     
     setProjects(prev => [...prev, newProject]);
@@ -278,6 +281,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     });
   };
 
+  // Helper function to safely access nested properties
+  const safelyAccess = (obj: any, path: string, defaultValue: any = '') => {
+    const keys = path.split('.');
+    let result = obj;
+    
+    for (const key of keys) {
+      if (result === undefined || result === null) {
+        return defaultValue;
+      }
+      result = result[key];
+    }
+    
+    return result === undefined || result === null ? defaultValue : result;
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid grid-cols-5 mb-8">
@@ -306,10 +324,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   <Input 
                     id="primaryColor"
                     type="color" 
-                    value={settings.theme.primary} 
+                    value={safelyAccess(settings, 'theme.primary', "#9333ea")} 
                     onChange={(e) => handleThemeChange('primary', e.target.value)}
                   />
-                  <span className="text-sm text-muted-foreground">{settings.theme.primary}</span>
+                  <span className="text-sm text-muted-foreground">{safelyAccess(settings, 'theme.primary', "#9333ea")}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -318,10 +336,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   <Input 
                     id="secondaryColor"
                     type="color" 
-                    value={settings.theme.secondary} 
+                    value={safelyAccess(settings, 'theme.secondary', "#a855f7")} 
                     onChange={(e) => handleThemeChange('secondary', e.target.value)}
                   />
-                  <span className="text-sm text-muted-foreground">{settings.theme.secondary}</span>
+                  <span className="text-sm text-muted-foreground">{safelyAccess(settings, 'theme.secondary', "#a855f7")}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -330,10 +348,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   <Input 
                     id="accentColor"
                     type="color" 
-                    value={settings.theme.accent} 
+                    value={safelyAccess(settings, 'theme.accent', "#c084fc")} 
                     onChange={(e) => handleThemeChange('accent', e.target.value)}
                   />
-                  <span className="text-sm text-muted-foreground">{settings.theme.accent}</span>
+                  <span className="text-sm text-muted-foreground">{safelyAccess(settings, 'theme.accent', "#c084fc")}</span>
                 </div>
               </div>
             </div>
@@ -346,11 +364,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 });
                 
                 // Apply colors to :root CSS variables
-                document.documentElement.style.setProperty('--primary', settings.theme.primary);
-                document.documentElement.style.setProperty('--secondary', settings.theme.secondary);
-                document.documentElement.style.setProperty('--accent', settings.theme.accent);
+                document.documentElement.style.setProperty('--primary', safelyAccess(settings, 'theme.primary', "#9333ea"));
+                document.documentElement.style.setProperty('--secondary', safelyAccess(settings, 'theme.secondary', "#a855f7"));
+                document.documentElement.style.setProperty('--accent', safelyAccess(settings, 'theme.accent', "#c084fc"));
               }}
-              style={{ backgroundColor: settings.theme.primary }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save Theme Settings" : "حفظ إعدادات الثيم"}
             </Button>
@@ -360,19 +378,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <div className="flex gap-2">
                 <div 
                   className="w-16 h-16 rounded-md flex items-center justify-center text-white"
-                  style={{ backgroundColor: settings.theme.primary }}
+                  style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
                 >
                   Primary
                 </div>
                 <div 
                   className="w-16 h-16 rounded-md flex items-center justify-center text-white"
-                  style={{ backgroundColor: settings.theme.secondary }}
+                  style={{ backgroundColor: safelyAccess(settings, 'theme.secondary', "#a855f7") }}
                 >
                   Secondary
                 </div>
                 <div 
                   className="w-16 h-16 rounded-md flex items-center justify-center text-white"
-                  style={{ backgroundColor: settings.theme.accent }}
+                  style={{ backgroundColor: safelyAccess(settings, 'theme.accent', "#c084fc") }}
                 >
                   Accent
                 </div>
@@ -395,7 +413,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="logoText">{language === "en" ? "Logo Text" : "نص الشعار"}</Label>
               <Input 
                 id="logoText"
-                value={settings.logo.text} 
+                value={safelyAccess(settings, 'logo.text', "Mohamed Taroqa")} 
                 onChange={(e) => handleLogoChange('text', e.target.value)}
                 placeholder={language === "en" ? "Enter logo text" : "أدخل نص الشعار"}
               />
@@ -407,7 +425,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 <div className="flex items-center gap-2">
                   <Input 
                     id="logoImage"
-                    value={settings.logo.image} 
+                    value={safelyAccess(settings, 'logo.image', "")} 
                     onChange={(e) => handleLogoChange('image', e.target.value)}
                     placeholder={language === "en" ? "Enter logo image URL or upload" : "أدخل رابط صورة الشعار أو قم بتحميلها"}
                   />
@@ -429,10 +447,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   />
                 </div>
                 
-                {settings.logo.image && (
+                {safelyAccess(settings, 'logo.image', "") && (
                   <div className="flex items-center gap-4 bg-muted p-3 rounded-md">
                     <img 
-                      src={settings.logo.image} 
+                      src={safelyAccess(settings, 'logo.image', "")} 
                       alt="Logo Preview" 
                       className="h-10 w-10 object-contain rounded border"
                     />
@@ -456,14 +474,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 {language === "en" ? "Logo Preview" : "معاينة الشعار"}
               </p>
               <div className="flex items-center gap-2">
-                {settings.logo.image && (
+                {safelyAccess(settings, 'logo.image', "") && (
                   <img 
-                    src={settings.logo.image} 
+                    src={safelyAccess(settings, 'logo.image', "")} 
                     alt="Logo" 
                     className="h-8 w-auto"
                   />
                 )}
-                <span className="text-lg font-bold">{settings.logo.text}</span>
+                <span className="text-lg font-bold">{safelyAccess(settings, 'logo.text', "Mohamed Taroqa")}</span>
               </div>
             </div>
             
@@ -474,7 +492,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   description: language === "en" ? "Your logo settings have been saved" : "تم حفظ إعدادات الشعار الخاصة بك",
                 });
               }}
-              style={{ backgroundColor: settings.theme.primary }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save Logo Settings" : "حفظ إعدادات الشعار"}
             </Button>
@@ -497,7 +515,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="heroTitle">{language === "en" ? "Hero Title" : "عنوان البطل"}</Label>
               <Input 
                 id="heroTitle"
-                value={settings.hero.title} 
+                value={safelyAccess(settings, 'hero.title', "Creative Developer")} 
                 onChange={(e) => handleHeroChange('title', e.target.value)}
                 placeholder={language === "en" ? "Enter hero title" : "أدخل عنوان البطل"}
               />
@@ -507,7 +525,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="heroSubtitle">{language === "en" ? "Hero Subtitle" : "العنوان الفرعي للبطل"}</Label>
               <Textarea 
                 id="heroSubtitle"
-                value={settings.hero.subtitle} 
+                value={safelyAccess(settings, 'hero.subtitle', "Frontend Developer, Graphic Designer, and Video Editor creating stunning digital experiences with attention to detail.")} 
                 onChange={(e) => handleHeroChange('subtitle', e.target.value)}
                 placeholder={language === "en" ? "Enter hero subtitle" : "أدخل العنوان الفرعي للبطل"}
                 rows={3}
@@ -520,7 +538,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 <div className="flex items-center gap-2">
                   <Input 
                     id="heroImage"
-                    value={settings.hero.image} 
+                    value={safelyAccess(settings, 'hero.image', "")} 
                     onChange={(e) => handleHeroChange('image', e.target.value)}
                     placeholder={language === "en" ? "Enter hero image URL or upload" : "أدخل رابط صورة البطل أو قم بتحميلها"}
                   />
@@ -542,10 +560,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   />
                 </div>
                 
-                {settings.hero.image && (
+                {safelyAccess(settings, 'hero.image', "") && (
                   <div className="flex items-center gap-4 bg-muted p-3 rounded-md">
                     <img 
-                      src={settings.hero.image} 
+                      src={safelyAccess(settings, 'hero.image', "")} 
                       alt="Hero Preview" 
                       className="h-16 w-16 object-cover rounded border"
                     />
@@ -571,7 +589,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   description: language === "en" ? "Your hero content has been saved" : "تم حفظ محتوى البطل الخاص بك",
                 });
               }}
-              style={{ backgroundColor: settings.theme.primary }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save Hero Content" : "حفظ محتوى البطل"}
             </Button>
@@ -592,7 +610,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="aboutContent">{language === "en" ? "About Content" : "محتوى حول"}</Label>
               <Textarea 
                 id="aboutContent"
-                value={settings.about.content} 
+                value={safelyAccess(settings, 'about.content', "As a Frontend Developer, Graphic Designer, and Video Editor, I bring a unique blend of technical and creative skills to every project.")} 
                 onChange={(e) => handleAboutChange('content', e.target.value)}
                 placeholder={language === "en" ? "Enter about content" : "أدخل محتوى حول"}
                 rows={5}
@@ -605,7 +623,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 <div className="flex items-center gap-2">
                   <Input 
                     id="aboutImage"
-                    value={settings.about.image} 
+                    value={safelyAccess(settings, 'about.image', "")} 
                     onChange={(e) => handleAboutChange('image', e.target.value)}
                     placeholder={language === "en" ? "Enter about image URL or upload" : "أدخل رابط صورة حول أو قم بتحميلها"}
                   />
@@ -627,10 +645,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   />
                 </div>
                 
-                {settings.about.image && (
+                {safelyAccess(settings, 'about.image', "") && (
                   <div className="flex items-center gap-4 bg-muted p-3 rounded-md">
                     <img 
-                      src={settings.about.image} 
+                      src={safelyAccess(settings, 'about.image', "")} 
                       alt="About Preview" 
                       className="h-16 w-16 object-cover rounded border"
                     />
@@ -656,7 +674,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   description: language === "en" ? "Your about content has been saved" : "تم حفظ محتوى حول الخاص بك",
                 });
               }}
-              style={{ backgroundColor: settings.theme.primary }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save About Content" : "حفظ محتوى حول"}
             </Button>
@@ -678,7 +696,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Input 
                 id="contactEmail"
                 type="email"
-                value={settings.contact.email} 
+                value={safelyAccess(settings, 'contact.email', "contact@example.com")} 
                 onChange={(e) => handleContactChange('email', e.target.value)}
                 placeholder={language === "en" ? "Enter email address" : "أدخل عنوان البريد الإلكتروني"}
               />
@@ -688,7 +706,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="contactPhone">{language === "en" ? "Phone Number" : "رقم الهاتف"}</Label>
               <Input 
                 id="contactPhone"
-                value={settings.contact.phone} 
+                value={safelyAccess(settings, 'contact.phone', "+1234567890")} 
                 onChange={(e) => handleContactChange('phone', e.target.value)}
                 placeholder={language === "en" ? "Enter phone number" : "أدخل رقم الهاتف"}
               />
@@ -698,7 +716,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Label htmlFor="contactAddress">{language === "en" ? "Address" : "العنوان"}</Label>
               <Textarea 
                 id="contactAddress"
-                value={settings.contact.address} 
+                value={safelyAccess(settings, 'contact.address', "123 Tech Street, Web City")} 
                 onChange={(e) => handleContactChange('address', e.target.value)}
                 placeholder={language === "en" ? "Enter address" : "أدخل العنوان"}
                 rows={3}
@@ -712,7 +730,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   description: language === "en" ? "Your contact information has been saved" : "تم حفظ معلومات الاتصال الخاصة بك",
                 });
               }}
-              style={{ backgroundColor: settings.theme.primary }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save Contact Information" : "حفظ معلومات الاتصال"}
             </Button>
@@ -742,7 +760,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 <Button 
                   variant="outline" 
                   onClick={() => fileInputRef.current?.click()}
-                  style={{ borderColor: settings.theme.primary, color: settings.theme.primary }}
+                  style={{ borderColor: safelyAccess(settings, 'theme.primary', "#9333ea"), color: safelyAccess(settings, 'theme.primary', "#9333ea") }}
                 >
                   {language === "en" ? "Upload Image" : "تحميل صورة"}
                 </Button>
@@ -826,7 +844,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button style={{ backgroundColor: settings.theme.primary }}>
+              <Button style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}>
                 <Plus className="h-4 w-4 mr-1" />
                 {language === "en" ? "Add New Project" : "إضافة مشروع جديد"}
               </Button>
@@ -891,6 +909,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   <Input id="projectTech" placeholder={language === "en" ? "React, Node.js, etc." : "React، Node.js، إلخ."} />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="projectTags">{language === "en" ? "Tags (comma separated)" : "العلامات (مفصولة بفواصل)"}</Label>
+                  <Input id="projectTags" placeholder={language === "en" ? "Frontend, Backend, etc." : "واجهة أمامية، خلفية، إلخ."} />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="projectLink">{language === "en" ? "Project Link (optional)" : "رابط المشروع (اختياري)"}</Label>
                   <Input id="projectLink" placeholder={language === "en" ? "https://..." : "https://..."} />
                 </div>
@@ -898,12 +920,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               
               <DialogFooter>
                 <Button 
-                  style={{ backgroundColor: settings.theme.primary }}
+                  style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
                   onClick={() => {
                     const title = (document.getElementById('projectTitle') as HTMLInputElement)?.value;
                     const description = (document.getElementById('projectDescription') as HTMLTextAreaElement)?.value;
                     const image = newProjectImage || (document.getElementById('projectImage') as HTMLInputElement)?.value;
                     const tech = (document.getElementById('projectTech') as HTMLInputElement)?.value;
+                    const tags = (document.getElementById('projectTags') as HTMLInputElement)?.value;
                     const link = (document.getElementById('projectLink') as HTMLInputElement)?.value;
                     
                     if (title && description && image) {
@@ -912,6 +935,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                         description,
                         image,
                         technologies: tech.split(',').map(t => t.trim()),
+                        tags: tags ? tags.split(',').map(t => t.trim()) : [],
                         link: link || undefined
                       });
                       setNewProjectImage("");
@@ -950,7 +974,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech, i) => (
+                    {project.technologies && project.technologies.map((tech, i) => (
                       <span 
                         key={i}
                         className="text-xs px-2 py-1 rounded-full bg-muted"
@@ -959,6 +983,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                       </span>
                     ))}
                   </div>
+                  {project.tags && project.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {project.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center rounded-md bg-secondary/50 px-2 py-0.5 text-xs font-medium"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex justify-end mt-4">
                     <Button 
                       variant="destructive" 
@@ -984,7 +1020,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button style={{ backgroundColor: settings.theme.primary }}>
+              <Button style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}>
                 <Plus className="h-4 w-4 mr-1" />
                 {language === "en" ? "Add New Certificate" : "إضافة شهادة جديدة"}
               </Button>
@@ -1052,7 +1088,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               
               <DialogFooter>
                 <Button 
-                  style={{ backgroundColor: settings.theme.primary }}
+                  style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
                   onClick={() => {
                     const title = (document.getElementById('certTitle') as HTMLInputElement)?.value;
                     const issuer = (document.getElementById('certIssuer') as HTMLInputElement)?.value;

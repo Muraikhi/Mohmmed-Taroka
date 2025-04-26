@@ -1,45 +1,19 @@
 
 import React from "react";
-import { cn } from "@/lib/utils";
-import ScrollReveal from "./ScrollReveal";
 
-interface SectionTitleProps {
-  title: string;
-  subtitle?: string;
-  center?: boolean;
-  className?: string;
+export interface SectionTitleProps {
+  children: React.ReactNode;
+  title?: string;
 }
 
-const SectionTitle: React.FC<SectionTitleProps> = ({
-  title,
-  subtitle,
-  center = false,
-  className,
-}) => {
+const SectionTitle: React.FC<SectionTitleProps> = ({ children, title }) => {
   return (
-    <div
-      className={cn(
-        "mb-12",
-        center && "text-center",
-        className
-      )}
-    >
-      <ScrollReveal>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          <span className="text-gradient">{title}</span>
-        </h2>
-      </ScrollReveal>
-      {subtitle && (
-        <ScrollReveal delay={200}>
-          <p className="text-muted-foreground text-lg max-w-3xl">
-            {subtitle}
-          </p>
-        </ScrollReveal>
-      )}
-      <div className="mt-4 flex items-center gap-2">
-        <div className="h-1 w-16 bg-purple-600 rounded"></div>
-        <div className="h-1 w-4 bg-purple-400 rounded"></div>
-      </div>
+    <div className="mb-12 text-center">
+      <h2 className="text-3xl font-bold md:text-4xl lg:text-5xl">
+        {children}
+      </h2>
+      {title && <p className="mt-2 text-muted-foreground">{title}</p>}
+      <div className="mx-auto mt-3 h-1 w-20 rounded bg-primary"></div>
     </div>
   );
 };

@@ -14,7 +14,7 @@ export default function Layout() {
     return false;
   });
 
-  const [language, setLanguage] = useState<"en" | "ar">(() => {
+  const [language] = useState<"en" | "ar">(() => {
     if (typeof window !== "undefined") {
       const savedLanguage = window.localStorage.getItem("language");
       return (savedLanguage as "en" | "ar") || "en";
@@ -86,7 +86,7 @@ export default function Layout() {
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         language={language}
-        siteSettings={siteSettings}
+        toggleLanguage={() => {}} // Empty function as we're not changing language
       />
       <main>
         <Outlet />
