@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -155,31 +156,39 @@ const Index = () => {
     };
   }, [settings, projects, homeImages]);
 
+  // Ensure settings and nested objects are defined to prevent "Cannot read properties of undefined" errors
+  const heroTitle = settings?.hero?.title || (language === "en" ? "Creative Developer" : "مطور مبدع");
+  const heroSubtitle = settings?.hero?.subtitle || (language === "en" 
+    ? "Frontend Developer, Graphic Designer, and Video Editor creating stunning digital experiences with attention to detail."
+    : "مطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو أبتكر تجارب رقمية مذهلة مع الاهتمام بالتفاصيل.");
+  const logoText = settings?.logo?.text || "Mohamed Taroqa";
+  const aboutContent = settings?.about?.content || (language === "en"
+    ? "As a Frontend Developer, Graphic Designer, and Video Editor, I bring a unique blend of technical and creative skills to every project. My passion lies in creating visually stunning and functional digital experiences that make an impact."
+    : "كمطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو، أجلب مزيجًا فريدًا من المهارات التقنية والإبداعية لكل مشروع. شغفي يكمن في إنشاء تجارب رقمية مذهلة بصريًا ووظيفية تحدث تأثيرًا.");
+
   return (
     <div dir={language === "ar" ? "rtl" : "ltr"}>
       <section className="relative min-h-screen flex items-center justify-center pt-16">
         <div className="container mx-auto px-4 py-16 flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 space-y-8">
             <ScrollReveal>
-              <p className="text-purple-600 font-medium mb-2" style={{ color: settings.theme.primary }}>
+              <p className="text-purple-600 font-medium mb-2" style={{ color: settings?.theme?.primary || "#9333ea" }}>
                 {language === "en" ? "Hello, I'm" : "مرحبا، أنا"}
               </p>
             </ScrollReveal>
             <ScrollReveal delay={200}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                <span>{settings.logo.text || "Mohamed Taroqa"}</span>
+                <span>{logoText}</span>
                 <span className="block mt-2 text-gradient" style={{ 
-                  backgroundImage: `linear-gradient(to right, ${settings.theme.primary}, ${settings.theme.secondary})` 
+                  backgroundImage: `linear-gradient(to right, ${settings?.theme?.primary || "#9333ea"}, ${settings?.theme?.secondary || "#a855f7"})` 
                 }}>
-                  {settings.hero.title || (language === "en" ? "Creative Developer" : "مطور مبدع")}
+                  {heroTitle}
                 </span>
               </h1>
             </ScrollReveal>
             <ScrollReveal delay={400}>
               <p className="text-xl text-muted-foreground max-w-2xl">
-                {settings.hero.subtitle || (language === "en" 
-                  ? "Frontend Developer, Graphic Designer, and Video Editor creating stunning digital experiences with attention to detail."
-                  : "مطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو أبتكر تجارب رقمية مذهلة مع الاهتمام بالتفاصيل.")}
+                {heroSubtitle}
               </p>
             </ScrollReveal>
             <ScrollReveal delay={600}>
@@ -187,7 +196,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="btn-hover"
-                  style={{ backgroundColor: settings.theme.primary, color: 'white' }}
+                  style={{ backgroundColor: settings?.theme?.primary || "#9333ea", color: 'white' }}
                 >
                   <Link to="/contact">{language === "en" ? "Contact Me" : "تواصل معي"}</Link>
                 </Button>
@@ -195,7 +204,7 @@ const Index = () => {
                   size="lg" 
                   variant="outline" 
                   className="btn-hover"
-                  style={{ borderColor: settings.theme.primary, color: settings.theme.primary }}
+                  style={{ borderColor: settings?.theme?.primary || "#9333ea", color: settings?.theme?.primary || "#9333ea" }}
                 >
                   <Link to="/projects">{language === "en" ? "View Projects" : "عرض المشاريع"}</Link>
                 </Button>
@@ -205,11 +214,11 @@ const Index = () => {
           <div className="flex-1 relative">
             <div className="relative">
               <ScrollReveal direction="left">
-                {settings.hero.image ? (
+                {settings?.hero?.image ? (
                   <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
                     <div 
                       className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
-                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                      style={{ background: `linear-gradient(to top right, ${settings?.theme?.primary || "#9333ea"}, ${settings?.theme?.secondary || "#a855f7"})` }}
                     ></div>
                     <div className="absolute inset-0 rounded-full overflow-hidden p-2">
                       <img 
@@ -219,11 +228,11 @@ const Index = () => {
                       />
                     </div>
                   </div>
-                ) : homeImages.length > 0 && homeImages[0].url ? (
+                ) : homeImages.length > 0 && homeImages[0]?.url ? (
                   <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
                     <div 
                       className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
-                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                      style={{ background: `linear-gradient(to top right, ${settings?.theme?.primary || "#9333ea"}, ${settings?.theme?.secondary || "#a855f7"})` }}
                     ></div>
                     <div className="absolute inset-0 rounded-full overflow-hidden p-2">
                       <img 
@@ -237,26 +246,26 @@ const Index = () => {
                   <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
                     <div 
                       className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
-                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                      style={{ background: `linear-gradient(to top right, ${settings?.theme?.primary || "#9333ea"}, ${settings?.theme?.secondary || "#a855f7"})` }}
                     ></div>
                     <div 
                       className="absolute inset-4 rounded-full border-2 animate-spin-slow"
-                      style={{ borderColor: `${settings.theme.primary}30` }}
+                      style={{ borderColor: `${settings?.theme?.primary || "#9333ea"}30` }}
                     ></div>
                     <div 
                       className="absolute inset-8 rounded-full border-2 animate-spin-slow" 
-                      style={{ borderColor: `${settings.theme.primary}30`, animationDirection: "reverse" }}
+                      style={{ borderColor: `${settings?.theme?.primary || "#9333ea"}30`, animationDirection: "reverse" }}
                     ></div>
                     <div className="absolute inset-0 rounded-full overflow-hidden p-2">
                       <div 
                         className="w-full h-full rounded-full backdrop-blur-sm flex items-center justify-center"
-                        style={{ backgroundColor: `${settings.theme.primary}10` }}
+                        style={{ backgroundColor: `${settings?.theme?.primary || "#9333ea"}10` }}
                       >
                         <span 
                           className="text-9xl font-bold"
-                          style={{ color: settings.theme.primary }}
+                          style={{ color: settings?.theme?.primary || "#9333ea" }}
                         >
-                          {settings.logo.text?.[0] || "M"}
+                          {logoText?.[0] || "M"}
                         </span>
                       </div>
                     </div>
@@ -273,14 +282,14 @@ const Index = () => {
           </span>
           <div 
             className="h-10 w-0.5" 
-            style={{ backgroundColor: settings.theme.primary }}
+            style={{ backgroundColor: settings?.theme?.primary || "#9333ea" }}
           ></div>
         </div>
       </section>
 
       <section 
         className="py-20" 
-        style={{ backgroundColor: `${settings.theme.primary}05` }}
+        style={{ backgroundColor: `${settings?.theme?.primary || "#9333ea"}05` }}
       >
         <div className="container mx-auto px-4">
           <SectionTitle 
@@ -295,9 +304,7 @@ const Index = () => {
             <ScrollReveal>
               <div className="prose prose-lg max-w-none dark:prose-invert">
                 <p>
-                  {settings.about.content || (language === "en"
-                    ? "As a Frontend Developer, Graphic Designer, and Video Editor, I bring a unique blend of technical and creative skills to every project. My passion lies in creating visually stunning and functional digital experiences that make an impact."
-                    : "كمطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو، أجلب مزيجًا فريدًا من المهارات التقنية والإبداعية لكل مشروع. شغفي يكمن في إنشاء تجارب رقمية مذهلة بصريًا ووظيفية تحدث تأثيرًا.")}
+                  {aboutContent}
                 </p>
                 <p>
                   {language === "en"
@@ -309,7 +316,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   className="btn-hover"
-                  style={{ backgroundColor: settings.theme.primary, color: 'white' }}
+                  style={{ backgroundColor: settings?.theme?.primary || "#9333ea", color: 'white' }}
                 >
                   <Link to="/about">
                     {language === "en" ? "Learn More About Me" : "تعرف علي أكثر"}
@@ -332,7 +339,7 @@ const Index = () => {
                         className="progress-bar-fill"
                         style={{ 
                           transform: `scaleX(${skill.percentage / 100})`,
-                          backgroundColor: settings.theme.primary 
+                          backgroundColor: settings?.theme?.primary || "#9333ea" 
                         }}
                       />
                     </div>
@@ -427,7 +434,7 @@ const Index = () => {
 
       <section 
         className="py-20 text-white"
-        style={{ backgroundColor: settings.theme.primary }}
+        style={{ backgroundColor: settings?.theme?.primary || "#9333ea" }}
       >
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
