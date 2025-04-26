@@ -1,9 +1,18 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Languages } from "lucide-react";
+import { Moon, Sun, Languages, User, Menu, Settings, Home, Code, GameController, Phone } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { 
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle
+} from "@/components/ui/navigation-menu";
 
 interface NavItem {
   label: {
@@ -11,29 +20,40 @@ interface NavItem {
     ar: string;
   };
   href: string;
+  icon: React.ElementType;
 }
 
 const navItems: NavItem[] = [
   {
     label: { en: "Home", ar: "الرئيسية" },
     href: "/",
+    icon: Home,
   },
   {
     label: { en: "About", ar: "عني" },
     href: "/about",
+    icon: User,
   },
   {
     label: { en: "Projects", ar: "المشاريع" },
     href: "/projects",
+    icon: Code,
   },
   {
     label: { en: "Game", ar: "اللعبة" },
     href: "/game",
+    icon: GameController,
   },
   {
     label: { en: "Contact", ar: "اتصل بي" },
     href: "/contact",
+    icon: Phone,
   },
+  {
+    label: { en: "Admin", ar: "المسؤول" },
+    href: "/admin",
+    icon: Settings,
+  }
 ];
 
 interface NavbarProps {
@@ -43,7 +63,7 @@ interface NavbarProps {
   toggleLanguage: () => void;
 }
 
-export default function Navbar({ 
+export default function Navbar({
   isDarkMode, 
   toggleDarkMode, 
   language, 
@@ -52,15 +72,51 @@ export default function Navbar({
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Get site settings for logo from localStorage if available
+  const [siteSettings, setSiteSettings] = useState(() => {
+    const saved = localStorage.getItem('siteSettings');
+    return saved ? JSON.parse(saved) : {
+      logo: { text: "Mohamed Taroqa", image: "" },
+      theme: { primary: "#9333ea", secondary: "#a855f7", accent: "#c084fc" }
+    };
+  });
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
+    const handleSettingsChange = () => {
+      const saved = localStorage.getItem('siteSettings');
+      if (saved) {
+        setSiteSettings(JSON.parse(saved));
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("storage", handleSettingsChange);
+    
+    // Check for settings changes periodically
+    const interval = setInterval(() => {
+      const saved = localStorage.getItem('siteSettings');
+      if (saved) {
+        const newSettings = JSON.parse(saved);
+        if (JSON.stringify(newSettings) !== JSON.stringify(siteSettings)) {
+          setSiteSettings(newSettings);
+        }
+      }
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", handleSettingsChange);
+      clearInterval(interval);
+    };
+  }, [siteSettings]);
+
+  // Get primary color from site settings or use default
+  const primaryColor = siteSettings?.theme?.primary || "#9333ea";
 
   return (
     <header
@@ -71,39 +127,61 @@ export default function Navbar({
           : "py-4 bg-transparent"
       )}
       dir={language === "ar" ? "rtl" : "ltr"}
+      style={{
+        "--navbar-primary": primaryColor
+      } as React.CSSProperties}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <div className="relative w-10 h-10">
-            <div className="absolute inset-0 bg-purple-600 rounded-md rotate-45 transform-gpu animate-pulse"></div>
-            <div className="absolute inset-1 bg-background rounded-md rotate-45 flex items-center justify-center">
-              <span className="text-purple-600 font-bold text-xl">M</span>
+          {siteSettings?.logo?.image ? (
+            <div className="h-10 w-10 relative overflow-hidden rounded-md">
+              <img 
+                src={siteSettings.logo.image} 
+                alt="Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
-          </div>
+          ) : (
+            <div className="relative w-10 h-10">
+              <div 
+                className="absolute inset-0 rounded-md rotate-45 transform-gpu animate-pulse"
+                style={{ backgroundColor: primaryColor }}
+              ></div>
+              <div className="absolute inset-1 bg-background rounded-md rotate-45 flex items-center justify-center">
+                <span style={{ color: primaryColor }} className="font-bold text-xl">M</span>
+              </div>
+            </div>
+          )}
           <span className="font-bold text-xl">
-            {language === "en" ? "Mohamed Taroqa" : "محمد طروقه"}
+            {siteSettings?.logo?.text || (language === "en" ? "Mohamed Taroqa" : "محمد طروقه")}
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <ul className="flex items-center gap-2">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
-                  className={cn(
-                    "px-3 py-2 rounded-md transition-colors",
-                    location.pathname === item.href
-                      ? "text-white bg-purple-600"
-                      : "hover:bg-purple-100 dark:hover:bg-purple-900/30"
-                  )}
-                >
-                  {language === "en" ? item.label.en : item.label.ar}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        {/* Desktop Navigation - Now using NavigationMenu */}
+        <div className="hidden md:flex items-center gap-6">
+          <NavigationMenu>
+            <NavigationMenuList>
+              {navItems.map((item) => (
+                <NavigationMenuItem key={item.href}>
+                  <Link 
+                    to={item.href}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "flex items-center gap-1.5",
+                      location.pathname === item.href
+                        ? "bg-primary text-primary-foreground"
+                        : ""
+                    )}
+                    style={location.pathname === item.href ? { backgroundColor: primaryColor } : {}}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {language === "en" ? item.label.en : item.label.ar}
+                  </Link>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
           
           <div className="flex items-center gap-2">
             <Button
@@ -124,7 +202,7 @@ export default function Navbar({
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
           </div>
-        </nav>
+        </div>
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
@@ -169,7 +247,7 @@ export default function Navbar({
           </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Enhanced with icons */}
         <div className={cn(
           "fixed inset-x-0 top-[60px] p-4 bg-background/95 backdrop-blur-lg border-b border-border md:hidden transition-all duration-300 z-50 shadow-lg",
           isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
@@ -180,13 +258,15 @@ export default function Navbar({
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "px-4 py-3 rounded-md transition-colors text-center",
+                  "px-4 py-3 rounded-md transition-colors flex items-center gap-2",
                   location.pathname === item.href
-                    ? "bg-purple-600 text-white"
-                    : "hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                    ? "bg-primary text-white"
+                    : "hover:bg-primary/10"
                 )}
+                style={location.pathname === item.href ? { backgroundColor: primaryColor } : {}}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
+                <item.icon className="h-5 w-5" />
                 {language === "en" ? item.label.en : item.label.ar}
               </Link>
             ))}

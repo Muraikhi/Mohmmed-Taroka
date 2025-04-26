@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -9,47 +9,93 @@ import ProjectCard from "@/components/ProjectCard";
 import { ArrowRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  githubLink?: string;
+  demoLink?: string;
+}
+
+interface SiteSettings {
+  theme: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  logo: {
+    text: string;
+    image: string;
+  };
+  hero: {
+    title: string;
+    subtitle: string;
+    image: string;
+  };
+  about: {
+    content: string;
+    image: string;
+  };
+  contact: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+}
+
+interface HomeImage {
+  id: string;
+  url: string;
+  title?: string;
+}
+
+const defaultSiteSettings: SiteSettings = {
+  theme: {
+    primary: "#9333ea",
+    secondary: "#a855f7",
+    accent: "#c084fc",
+  },
+  logo: {
+    text: "Mohamed Taroqa",
+    image: "",
+  },
+  hero: {
+    title: "Creative Developer",
+    subtitle: "Frontend Developer, Graphic Designer, and Video Editor creating stunning digital experiences with attention to detail.",
+    image: ""
+  },
+  about: {
+    content: "As a Frontend Developer, Graphic Designer, and Video Editor, I bring a unique blend of technical and creative skills to every project.",
+    image: ""
+  },
+  contact: {
+    email: "contact@example.com",
+    phone: "+1234567890",
+    address: "123 Tech Street, Web City"
+  }
+};
+
 const Index = () => {
   const location = useLocation();
   const language = localStorage.getItem("language") as "en" | "ar" || "en";
   const isMobile = useIsMobile();
-
-  // Example projects data (in a real app this would come from an API/database)
-  const featuredProjects = [
-    {
-      id: "1",
-      title: language === "en" ? "E-commerce Website" : "متجر إلكتروني",
-      description: language === "en" 
-        ? "A modern e-commerce platform with advanced filtering and cart functionality." 
-        : "منصة تجارة إلكترونية حديثة مع تصفية متقدمة ووظائف عربة التسوق.",
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop",
-      tags: ["React", "Redux", "Tailwind"],
-      githubLink: "#",
-      demoLink: "#",
-    },
-    {
-      id: "2",
-      title: language === "en" ? "Portfolio Template" : "قالب معرض الأعمال",
-      description: language === "en"
-        ? "A customizable portfolio template for creative professionals."
-        : "قالب معرض أعمال قابل للتخصيص للمحترفين المبدعين.",
-      image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=2000&auto=format&fit=crop",
-      tags: ["HTML", "CSS", "JavaScript"],
-      githubLink: "#",
-      demoLink: "#",
-    },
-    {
-      id: "3",
-      title: language === "en" ? "Task Management App" : "تطبيق إدارة المهام",
-      description: language === "en"
-        ? "A task management application with drag-and-drop functionality."
-        : "تطبيق إدارة المهام مع وظيفة السحب والإفلات.",
-      image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=2000&auto=format&fit=crop",
-      tags: ["React", "TypeScript", "Firebase"],
-      githubLink: "#",
-      demoLink: "#",
-    }
-  ];
+  
+  const [settings, setSettings] = useState<SiteSettings>(() => {
+    const savedSettings = localStorage.getItem('siteSettings');
+    return savedSettings ? JSON.parse(savedSettings) : defaultSiteSettings;
+  });
+  
+  const [projects, setProjects] = useState<Project[]>(() => {
+    const savedProjects = localStorage.getItem('projects');
+    return savedProjects ? JSON.parse(savedProjects) : [];
+  });
+  
+  const [homeImages, setHomeImages] = useState<HomeImage[]>(() => {
+    const savedImages = localStorage.getItem('homeImages');
+    return savedImages ? JSON.parse(savedImages) : [];
+  });
   
   // Example skills data
   const skills = [
@@ -58,6 +104,60 @@ const Index = () => {
     { name: language === "en" ? "Video Editing" : "تحرير الفيديو", percentage: 80 },
     { name: language === "en" ? "UI/UX Design" : "تصميم واجهة المستخدم", percentage: 75 }
   ];
+  
+  // Listen for changes in settings and projects
+  useEffect(() => {
+    const handleSettingsChange = () => {
+      const savedSettings = localStorage.getItem('siteSettings');
+      if (savedSettings) {
+        setSettings(JSON.parse(savedSettings));
+      }
+      
+      const savedProjects = localStorage.getItem('projects');
+      if (savedProjects) {
+        setProjects(JSON.parse(savedProjects));
+      }
+      
+      const savedImages = localStorage.getItem('homeImages');
+      if (savedImages) {
+        setHomeImages(JSON.parse(savedImages));
+      }
+    };
+    
+    window.addEventListener('storage', handleSettingsChange);
+    
+    // Also check periodically
+    const interval = setInterval(() => {
+      const savedSettings = localStorage.getItem('siteSettings');
+      if (savedSettings) {
+        const newSettings = JSON.parse(savedSettings);
+        if (JSON.stringify(newSettings) !== JSON.stringify(settings)) {
+          setSettings(newSettings);
+        }
+      }
+      
+      const savedProjects = localStorage.getItem('projects');
+      if (savedProjects) {
+        const newProjects = JSON.parse(savedProjects);
+        if (JSON.stringify(newProjects) !== JSON.stringify(projects)) {
+          setProjects(newProjects);
+        }
+      }
+      
+      const savedImages = localStorage.getItem('homeImages');
+      if (savedImages) {
+        const newImages = JSON.parse(savedImages);
+        if (JSON.stringify(newImages) !== JSON.stringify(homeImages)) {
+          setHomeImages(newImages);
+        }
+      }
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleSettingsChange);
+      clearInterval(interval);
+    };
+  }, [settings, projects, homeImages]);
 
   return (
     <div dir={language === "ar" ? "rtl" : "ltr"}>
@@ -66,31 +166,42 @@ const Index = () => {
         <div className="container mx-auto px-4 py-16 flex flex-col lg:flex-row items-center gap-12">
           <div className="flex-1 space-y-8">
             <ScrollReveal>
-              <p className="text-purple-600 font-medium mb-2">
+              <p className="text-purple-600 font-medium mb-2" style={{ color: settings.theme.primary }}>
                 {language === "en" ? "Hello, I'm" : "مرحبا، أنا"}
               </p>
             </ScrollReveal>
             <ScrollReveal delay={200}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                <span>Mohamed Taroqa</span>
-                <span className="block mt-2 text-gradient">
-                  {language === "en" ? "Creative Developer" : "مطور مبدع"}
+                <span>{settings.logo.text || "Mohamed Taroqa"}</span>
+                <span className="block mt-2 text-gradient" style={{ 
+                  backgroundImage: `linear-gradient(to right, ${settings.theme.primary}, ${settings.theme.secondary})` 
+                }}>
+                  {settings.hero.title || (language === "en" ? "Creative Developer" : "مطور مبدع")}
                 </span>
               </h1>
             </ScrollReveal>
             <ScrollReveal delay={400}>
               <p className="text-xl text-muted-foreground max-w-2xl">
-                {language === "en" 
+                {settings.hero.subtitle || (language === "en" 
                   ? "Frontend Developer, Graphic Designer, and Video Editor creating stunning digital experiences with attention to detail."
-                  : "مطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو أبتكر تجارب رقمية مذهلة مع الاهتمام بالتفاصيل."}
+                  : "مطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو أبتكر تجارب رقمية مذهلة مع الاهتمام بالتفاصيل.")}
               </p>
             </ScrollReveal>
             <ScrollReveal delay={600}>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 btn-hover">
+                <Button 
+                  size="lg" 
+                  className="btn-hover"
+                  style={{ backgroundColor: settings.theme.primary, color: 'white' }}
+                >
                   <Link to="/contact">{language === "en" ? "Contact Me" : "تواصل معي"}</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="btn-hover">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="btn-hover"
+                  style={{ borderColor: settings.theme.primary, color: settings.theme.primary }}
+                >
                   <Link to="/projects">{language === "en" ? "View Projects" : "عرض المشاريع"}</Link>
                 </Button>
               </div>
@@ -99,17 +210,63 @@ const Index = () => {
           <div className="flex-1 relative">
             <div className="relative">
               <ScrollReveal direction="left">
-                <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-purple-600/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-600 to-purple-400 opacity-20 blur-lg animate-pulse"></div>
-                  <div className="absolute inset-4 rounded-full border-2 border-purple-500/30 animate-spin-slow"></div>
-                  <div className="absolute inset-8 rounded-full border-2 border-purple-500/30 animate-spin-slow" style={{ animationDirection: "reverse" }}></div>
-                  <div className="absolute inset-0 rounded-full overflow-hidden p-2">
-                    <div className="w-full h-full rounded-full bg-purple-100 dark:bg-purple-900/30 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-purple-600 dark:text-purple-400 text-9xl font-bold">M</span>
+                {settings.hero.image ? (
+                  <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
+                    <div 
+                      className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
+                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                    ></div>
+                    <div className="absolute inset-0 rounded-full overflow-hidden p-2">
+                      <img 
+                        src={settings.hero.image} 
+                        alt="Hero" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
                     </div>
                   </div>
-                </div>
+                ) : homeImages.length > 0 && homeImages[0].url ? (
+                  <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
+                    <div 
+                      className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
+                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                    ></div>
+                    <div className="absolute inset-0 rounded-full overflow-hidden p-2">
+                      <img 
+                        src={homeImages[0].url} 
+                        alt={homeImages[0].title || "Homepage image"} 
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative z-20 w-full aspect-square max-w-md mx-auto">
+                    <div 
+                      className="absolute inset-0 rounded-full opacity-20 blur-lg animate-pulse"
+                      style={{ background: `linear-gradient(to top right, ${settings.theme.primary}, ${settings.theme.secondary})` }}
+                    ></div>
+                    <div 
+                      className="absolute inset-4 rounded-full border-2 animate-spin-slow"
+                      style={{ borderColor: `${settings.theme.primary}30` }}
+                    ></div>
+                    <div 
+                      className="absolute inset-8 rounded-full border-2 animate-spin-slow" 
+                      style={{ borderColor: `${settings.theme.primary}30`, animationDirection: "reverse" }}
+                    ></div>
+                    <div className="absolute inset-0 rounded-full overflow-hidden p-2">
+                      <div 
+                        className="w-full h-full rounded-full backdrop-blur-sm flex items-center justify-center"
+                        style={{ backgroundColor: `${settings.theme.primary}10` }}
+                      >
+                        <span 
+                          className="text-9xl font-bold"
+                          style={{ color: settings.theme.primary }}
+                        >
+                          {settings.logo.text?.[0] || "M"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </ScrollReveal>
             </div>
           </div>
@@ -120,12 +277,18 @@ const Index = () => {
           <span className="block mb-2 text-sm text-muted-foreground">
             {language === "en" ? "Scroll Down" : "انزل للأسفل"}
           </span>
-          <div className="h-10 w-0.5 bg-purple-600"></div>
+          <div 
+            className="h-10 w-0.5" 
+            style={{ backgroundColor: settings.theme.primary }}
+          ></div>
         </div>
       </section>
 
       {/* About Section Preview */}
-      <section className="py-20 bg-purple-50/50 dark:bg-purple-900/5">
+      <section 
+        className="py-20" 
+        style={{ backgroundColor: `${settings.theme.primary}05` }}
+      >
         <div className="container mx-auto px-4">
           <SectionTitle 
             title={language === "en" ? "About Me" : "عني"} 
@@ -139,9 +302,9 @@ const Index = () => {
             <ScrollReveal>
               <div className="prose prose-lg max-w-none dark:prose-invert">
                 <p>
-                  {language === "en"
+                  {settings.about.content || (language === "en"
                     ? "As a Frontend Developer, Graphic Designer, and Video Editor, I bring a unique blend of technical and creative skills to every project. My passion lies in creating visually stunning and functional digital experiences that make an impact."
-                    : "كمطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو، أجلب مزيجًا فريدًا من المهارات التقنية والإبداعية لكل مشروع. شغفي يكمن في إنشاء تجارب رقمية مذهلة بصريًا ووظيفية تحدث تأثيرًا."}
+                    : "كمطور واجهة أمامية، مصمم جرافيك، ومونتير فيديو، أجلب مزيجًا فريدًا من المهارات التقنية والإبداعية لكل مشروع. شغفي يكمن في إنشاء تجارب رقمية مذهلة بصريًا ووظيفية تحدث تأثيرًا.")}
                 </p>
                 <p>
                   {language === "en"
@@ -150,7 +313,11 @@ const Index = () => {
                 </p>
               </div>
               <div className="mt-8">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 btn-hover">
+                <Button 
+                  size="lg" 
+                  className="btn-hover"
+                  style={{ backgroundColor: settings.theme.primary, color: 'white' }}
+                >
                   <Link to="/about">
                     {language === "en" ? "Learn More About Me" : "تعرف علي أكثر"}
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -169,8 +336,11 @@ const Index = () => {
                     </div>
                     <div className="progress-bar">
                       <div 
-                        className="progress-bar-fill bg-purple-600"
-                        style={{ transform: `scaleX(${skill.percentage / 100})` }}
+                        className="progress-bar-fill"
+                        style={{ 
+                          transform: `scaleX(${skill.percentage / 100})`,
+                          backgroundColor: settings.theme.primary 
+                        }}
                       />
                     </div>
                   </div>
@@ -181,43 +351,90 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Projects */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <SectionTitle 
-            title={language === "en" ? "Featured Projects" : "مشاريع مميزة"} 
-            subtitle={language === "en"
-              ? "Take a look at some of my recent work and achievements."
-              : "ألق نظرة على بعض أعمالي وإنجازاتي الأخيرة."
-            }
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProjects.map((project, index) => (
-              <ScrollReveal 
-                key={project.id} 
-                delay={index * 200}
-              >
-                <ProjectCard {...project} language={language} />
-              </ScrollReveal>
-            ))}
-          </div>
-
-          <ScrollReveal delay={600}>
-            <div className="mt-16 text-center">
-              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 btn-hover">
-                <Link to="/projects">
-                  {language === "en" ? "View All Projects" : "عرض جميع المشاريع"}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+      {/* Image Gallery - From uploaded images */}
+      {homeImages.length > 0 && (
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <SectionTitle 
+              title={language === "en" ? "Gallery" : "معرض الصور"} 
+              subtitle={language === "en"
+                ? "A collection of images showcasing my work and inspiration."
+                : "مجموعة من الصور التي تعرض عملي وإلهامي."
+              }
+            />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {homeImages.map((image, index) => (
+                <ScrollReveal key={image.id} delay={index * 150}>
+                  <div className="relative group overflow-hidden rounded-lg shadow-lg h-64">
+                    <img 
+                      src={image.url} 
+                      alt={image.title || "Gallery image"} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    />
+                    {image.title && (
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="p-4">
+                          <h3 className="text-white font-medium">{image.title}</h3>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
+              ))}
             </div>
-          </ScrollReveal>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Projects */}
+      {projects.length > 0 && (
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <SectionTitle 
+              title={language === "en" ? "Featured Projects" : "مشاريع مميزة"} 
+              subtitle={language === "en"
+                ? "Take a look at some of my recent work and achievements."
+                : "ألق نظرة على بعض أعمالي وإنجازاتي الأخيرة."
+              }
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project, index) => (
+                <ScrollReveal 
+                  key={project.id} 
+                  delay={index * 200}
+                >
+                  <ProjectCard {...project} language={language} />
+                </ScrollReveal>
+              ))}
+            </div>
+
+            {projects.length > 3 && (
+              <ScrollReveal delay={600}>
+                <div className="mt-16 text-center">
+                  <Button 
+                    size="lg" 
+                    className="btn-hover"
+                    style={{ backgroundColor: settings.theme.primary, color: 'white' }}
+                  >
+                    <Link to="/projects">
+                      {language === "en" ? "View All Projects" : "عرض جميع المشاريع"}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Link>
+                  </Button>
+                </div>
+              </ScrollReveal>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-20 bg-purple-600 text-white">
+      <section 
+        className="py-20 text-white"
+        style={{ backgroundColor: settings.theme.primary }}
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <ScrollReveal>
@@ -239,6 +456,7 @@ const Index = () => {
                 size="lg" 
                 variant="outline" 
                 className="border-white text-white hover:bg-white hover:text-purple-600 btn-hover"
+                style={{ borderColor: 'white', color: 'white' }}
               >
                 <Link to="/contact">
                   {language === "en" ? "Let's Connect" : "دعنا نتواصل"}

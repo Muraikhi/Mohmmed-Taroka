@@ -25,8 +25,9 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
     width: 30,
     height: 40,
     jumping: false,
-    jumpHeight: 15,
+    jumpHeight: 12,
     jumpCount: 0,
+    sprite: new Image(),
   });
 
   const obstaclesRef = useRef<Array<{
@@ -35,11 +36,27 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
     width: number;
     height: number;
     speed: number;
+    sprite: HTMLImageElement;
   }>>([]);
 
   const gameSpeedRef = useRef(4);
   const groundYRef = useRef(240);
-  const gravityRef = useRef(0.8);
+  const gravityRef = useRef(0.7);
+  const backgroundRef = useRef({
+    x: 0,
+    width: 800,
+    speed: 1,
+    sprite: new Image(),
+  });
+  
+  // Load game assets
+  useEffect(() => {
+    // Load player sprite
+    playerRef.current.sprite.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239333EA'%3E%3Cpath d='M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z'/%3E%3C/svg%3E";
+    
+    // Load background
+    backgroundRef.current.sprite.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='50' viewBox='0 0 800 50'%3E%3Cpath d='M0 25h800' stroke='%23888' stroke-width='2' stroke-dasharray='5,5'/%3E%3C/svg%3E";
+  }, []);
 
   // Initialize the game
   const startGame = () => {
@@ -53,12 +70,14 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
       width: 30,
       height: 40,
       jumping: false,
-      jumpHeight: 15,
+      jumpHeight: 12,
       jumpCount: 0,
+      sprite: playerRef.current.sprite,
     };
     
     obstaclesRef.current = [];
     gameSpeedRef.current = 4;
+    backgroundRef.current.x = 0;
     
     // Start the game loop
     gameLoop();
@@ -78,14 +97,14 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
     // Update player
     if (playerRef.current.jumping) {
       if (playerRef.current.jumpCount < 15) {
-        playerRef.current.y -= playerRef.current.jumpHeight - playerRef.current.jumpCount / 2;
+        playerRef.current.y -= playerRef.current.jumpHeight - playerRef.current.jumpCount / 3;
         playerRef.current.jumpCount++;
       } else {
         playerRef.current.jumping = false;
         playerRef.current.jumpCount = 0;
       }
     } else if (playerRef.current.y < groundYRef.current - playerRef.current.height) {
-      playerRef.current.y += gravityRef.current * 5;
+      playerRef.current.y += gravityRef.current * 4;
     }
 
     // Ensure player doesn't fall through the ground
@@ -93,16 +112,28 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
       playerRef.current.y = groundYRef.current - playerRef.current.height;
     }
 
+    // Update background
+    backgroundRef.current.x -= backgroundRef.current.speed;
+    if (backgroundRef.current.x <= -backgroundRef.current.width) {
+      backgroundRef.current.x = 0;
+    }
+
     // Generate obstacles
-    if (Math.random() < 0.01 + score / 10000) {
+    if (Math.random() < 0.01 + Math.min(score / 10000, 0.03)) {
       const height = Math.random() * 30 + 20;
-      obstaclesRef.current.push({
+      const obstacle = {
         x: 800,
         y: groundYRef.current - height,
         width: 20,
-        height,
+        height: height,
         speed: gameSpeedRef.current,
-      });
+        sprite: new Image(),
+      };
+      
+      // Create obstacle sprite
+      obstacle.sprite.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='30' viewBox='0 0 20 30' fill='%23EF4444'%3E%3Crect x='0' y='0' width='20' height='30' rx='2'/%3E%3C/svg%3E";
+      
+      obstaclesRef.current.push(obstacle);
     }
 
     // Update obstacles
@@ -130,6 +161,7 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
       const newScore = prev + 1;
       if (newScore % 500 === 0) {
         gameSpeedRef.current += 0.5;
+        backgroundRef.current.speed += 0.1;
       }
       return newScore;
     });
@@ -146,29 +178,39 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw background (parallax effect)
+    ctx.drawImage(backgroundRef.current.sprite, backgroundRef.current.x, groundYRef.current - 5);
+    ctx.drawImage(backgroundRef.current.sprite, backgroundRef.current.x + backgroundRef.current.width, groundYRef.current - 5);
+
     // Draw ground
     ctx.beginPath();
     ctx.moveTo(0, groundYRef.current);
     ctx.lineTo(canvas.width, groundYRef.current);
     ctx.strokeStyle = '#888';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Draw player
-    ctx.fillStyle = '#9333EA';
-    ctx.fillRect(
+    // Draw player as sprite instead of rectangle
+    ctx.drawImage(
+      playerRef.current.sprite,
       playerRef.current.x,
       playerRef.current.y,
       playerRef.current.width,
       playerRef.current.height
     );
 
-    // Draw obstacles
-    ctx.fillStyle = '#EF4444';
+    // Draw obstacles with sprites
     obstaclesRef.current.forEach(obstacle => {
-      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      ctx.drawImage(
+        obstacle.sprite,
+        obstacle.x,
+        obstacle.y,
+        obstacle.width,
+        obstacle.height
+      );
     });
 
-    // Draw score
+    // Draw score with improved style
     ctx.fillStyle = '#888';
     ctx.font = '16px Arial';
     ctx.fillText(`${language === "en" ? "Score" : "النتيجة"}: ${score}`, 700, 30);
@@ -197,16 +239,17 @@ const DinoGame: React.FC<DinoGameProps> = ({ language }) => {
         e.preventDefault();
         
         if (!playerRef.current.jumping && 
-            playerRef.current.y >= groundYRef.current - playerRef.current.height) {
+            playerRef.current.y >= groundYRef.current - playerRef.current.height - 1) {
           playerRef.current.jumping = true;
           playerRef.current.jumpCount = 0;
         }
       }
     };
 
-    const handleTouchStart = () => {
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
       if (!playerRef.current.jumping && 
-          playerRef.current.y >= groundYRef.current - playerRef.current.height) {
+          playerRef.current.y >= groundYRef.current - playerRef.current.height - 1) {
         playerRef.current.jumping = true;
         playerRef.current.jumpCount = 0;
       }
