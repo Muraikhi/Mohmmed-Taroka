@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -293,7 +292,11 @@ const Index = () => {
       >
         <div className="container mx-auto px-4">
           <SectionTitle 
-            title={language === "en" ? "About Me" : "عني"} 
+            children={language === "en" ? "About Me" : "عني"}
+            title={language === "en" 
+              ? "About Me"
+              : "عني"
+            }
             subtitle={language === "en" 
               ? "I'm a passionate creative professional with expertise in multiple fields."
               : "أنا محترف مبدع شغوف بخبرة في مجالات متعددة."
@@ -355,7 +358,8 @@ const Index = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <SectionTitle 
-              title={language === "en" ? "Gallery" : "معرض الصور"} 
+              children={language === "en" ? "Gallery" : "معرض الصور"}
+              title={language === "en" ? "Gallery" : "معرض الصور"}
               subtitle={language === "en"
                 ? "A collection of images showcasing my work and inspiration."
                 : "مجموعة من الصور التي تعرض عملي وإلهامي."
@@ -390,7 +394,8 @@ const Index = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <SectionTitle 
-              title={language === "en" ? "Featured Projects" : "مشاريع مميزة"} 
+              children={language === "en" ? "Featured Projects" : "مشاريع مميزة"}
+              title={language === "en" ? "Featured Projects" : "مشاريع مميزة"}
               subtitle={language === "en"
                 ? "Take a look at some of my recent work and achievements."
                 : "ألق نظرة على بعض أعمالي وإنجازاتي الأخيرة."
