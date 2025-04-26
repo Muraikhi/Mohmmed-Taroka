@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,23 +125,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
   const [newCertificateImage, setNewCertificateImage] = useState<string>("");
   const [activeTab, setActiveTab] = useState("appearance");
 
-  // Save settings to localStorage whenever they change
+  // Modified function to save settings and trigger site-wide update
   useEffect(() => {
     localStorage.setItem('siteSettings', JSON.stringify(settings));
     // Force a storage event to notify other components
     window.dispatchEvent(new Event('storage'));
+    // Also dispatch custom event to ensure changes are picked up
+    window.dispatchEvent(new Event('siteSettingsUpdated'));
   }, [settings]);
 
   useEffect(() => {
     localStorage.setItem('projects', JSON.stringify(projects));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('siteSettingsUpdated'));
   }, [projects]);
 
   useEffect(() => {
     localStorage.setItem('certificates', JSON.stringify(certificates));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('siteSettingsUpdated'));
   }, [certificates]);
 
   useEffect(() => {
     localStorage.setItem('homeImages', JSON.stringify(homeImages));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('siteSettingsUpdated'));
   }, [homeImages]);
 
   const handleThemeChange = (key: keyof SiteSettings['theme'], value: string) => {

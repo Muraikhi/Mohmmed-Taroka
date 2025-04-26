@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -58,6 +57,17 @@ const Admin = () => {
       description: language === "en" ? "You have been logged out" : "لقد تم تسجيل خروجك",
     });
   };
+
+  useEffect(() => {
+    const triggerStorageUpdate = () => {
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new Event('siteSettingsUpdated'));
+    };
+    
+    const intervalId = setInterval(triggerStorageUpdate, 5000);
+    
+    return () => clearInterval(intervalId);
+  }, []);
 
   if (!isAuthenticated) {
     return (

@@ -1,5 +1,5 @@
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -7,6 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const language = localStorage.getItem("language") as "en" | "ar" || "en";
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const NotFound = () => {
         
         <ScrollReveal delay={200}>
           <h1 className="text-3xl font-bold mb-4">
-            {language === "en" ? "Oops! Page not found" : "عذراً! الصفحة غير موجودة"}
+            {language === "en" ? "Page Not Found" : "الصفحة غير موجودة"}
           </h1>
         </ScrollReveal>
         
@@ -42,9 +43,15 @@ const NotFound = () => {
         </ScrollReveal>
         
         <ScrollReveal delay={600}>
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            <Link to="/">{language === "en" ? "Return to Home" : "العودة إلى الرئيسية"}</Link>
-          </Button>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Link to="/">{language === "en" ? "Return Home" : "العودة للرئيسية"}</Link>
+            </Button>
+            
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              {language === "en" ? "Go Back" : "رجوع للخلف"}
+            </Button>
+          </div>
         </ScrollReveal>
         
         <ScrollReveal delay={800}>

@@ -22,13 +22,47 @@ export default function Layout() {
     return "en";
   });
 
+  const [siteSettings, setSiteSettings] = useState<any>(null);
+
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => !prev);
   };
 
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "ar" : "en"));
-  };
+  // Listen for changes in localStorage (from admin panel)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const settings = localStorage.getItem('siteSettings');
+        if (settings) {
+          setSiteSettings(JSON.parse(settings));
+          
+          // Apply theme colors from admin settings
+          if (JSON.parse(settings).theme) {
+            const { theme } = JSON.parse(settings);
+            document.documentElement.style.setProperty('--primary', theme.primary);
+            document.documentElement.style.setProperty('--secondary', theme.secondary);
+            document.documentElement.style.setProperty('--accent', theme.accent);
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing site settings:", error);
+      }
+    };
+    
+    // Load initial settings
+    handleStorageChange();
+    
+    // Listen for changes
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event for directly updating without page refresh
+    window.addEventListener('siteSettingsUpdated', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('siteSettingsUpdated', handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -52,7 +86,7 @@ export default function Layout() {
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         language={language}
-        toggleLanguage={toggleLanguage}
+        siteSettings={siteSettings}
       />
       <main>
         <Outlet />

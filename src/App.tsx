@@ -8,6 +8,9 @@ import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Game from "./pages/Game";
 import Admin from "./pages/Admin";
+import Projects from "./pages/Projects";
+import Contact from "./pages/Contact";
+import Certificates from "./pages/Certificates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +26,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/game" element={<Game />} />
             <Route path="/admin" element={<Admin />} />
-            {/* More routes to be added */}
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/certificates" element={<Certificates />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
