@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -170,7 +171,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     },
   });
 
-  const deleteProject = useMutation({
+  const deleteProjectMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('projects')
@@ -219,7 +220,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     },
   });
 
-  const deleteCertificate = useMutation({
+  const deleteCertificateMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('certificates')
@@ -372,7 +373,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     });
   };
 
-  const deleteProject = (id: string) => {
+  const handleDeleteProject = (id: string) => {
     setProjects(prev => prev.filter(project => project.id !== id));
     toast({
       title: language === "en" ? "Project Deleted" : "تم حذف المشروع",
@@ -393,7 +394,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     });
   };
 
-  const deleteCertificate = (id: string) => {
+  const handleDeleteCertificate = (id: string) => {
     setCertificates(prev => prev.filter(certificate => certificate.id !== id));
     toast({
       title: language === "en" ? "Certificate Deleted" : "تم حذف الشهادة",
@@ -1140,7 +1141,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                     <Button 
                       variant="destructive" 
                       size="sm"
-                      onClick={() => deleteProject(project.id)}
+                      onClick={() => handleDeleteProject(project.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       {language === "en" ? "Delete" : "حذف"}
@@ -1284,7 +1285,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                     <Button 
                       variant="destructive" 
                       size="sm"
-                      onClick={() => deleteCertificate(cert.id)}
+                      onClick={() => handleDeleteCertificate(cert.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       {language === "en" ? "Delete" : "حذف"}
