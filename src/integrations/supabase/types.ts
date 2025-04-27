@@ -30,6 +30,33 @@ export type Database = {
         }
         Relationships: []
       }
+      certificates: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          image_url: string | null
+          issuer: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          image_url?: string | null
+          issuer: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          image_url?: string | null
+          issuer?: string
+          title?: string
+        }
+        Relationships: []
+      }
       foot_images: {
         Row: {
           created_at: string
@@ -80,6 +107,63 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          technologies: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          technologies?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          technologies?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          about_content: string
+          created_at: string
+          hero_subtitle: string
+          hero_title: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          about_content: string
+          created_at?: string
+          hero_subtitle: string
+          hero_title: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          about_content?: string
+          created_at?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: string
           updated_at?: string
         }
         Relationships: []

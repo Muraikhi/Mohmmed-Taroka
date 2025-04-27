@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,8 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ArrowUpCircle, FileImage, Plus, Trash2, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AdminDashboardProps {
   language: "en" | "ar";
@@ -96,6 +97,146 @@ const defaultSiteSettings: SiteSettings = {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Query site settings
+  const { data: dbSiteSettings } = useQuery({
+    queryKey: ['siteSettings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Update site settings mutation
+  const updateSiteSettings = useMutation({
+    mutationFn: async (newSettings: any) => {
+      const { error } = await supabase
+        .from('site_settings')
+        .update(newSettings)
+        .eq('id', dbSiteSettings.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
+      toast({
+        title: "Settings Updated",
+        description: "Your changes have been saved successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save changes. Please try again.",
+      });
+    },
+  });
+
+  // Projects queries and mutations
+  const { data: dbProjects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const addProject = useMutation({
+    mutationFn: async (project: any) => {
+      const { error } = await supabase
+        .from('projects')
+        .insert([project]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast({
+        title: "Project Added",
+        description: "The project has been added successfully.",
+      });
+    },
+  });
+
+  const deleteProject = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast({
+        title: "Project Deleted",
+        description: "The project has been deleted successfully.",
+      });
+    },
+  });
+
+  // Certificates queries and mutations
+  const { data: dbCertificates } = useQuery({
+    queryKey: ['certificates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('certificates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const addCertificate = useMutation({
+    mutationFn: async (certificate: any) => {
+      const { error } = await supabase
+        .from('certificates')
+        .insert([certificate]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['certificates'] });
+      toast({
+        title: "Certificate Added",
+        description: "The certificate has been added successfully.",
+      });
+    },
+  });
+
+  const deleteCertificate = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('certificates')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['certificates'] });
+      toast({
+        title: "Certificate Deleted",
+        description: "The certificate has been deleted successfully.",
+      });
+    },
+  });
+
   const [settings, setSettings] = useState<SiteSettings>(() => {
     const savedSettings = localStorage.getItem('siteSettings');
     return savedSettings ? JSON.parse(savedSettings) : defaultSiteSettings;
