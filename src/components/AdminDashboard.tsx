@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,7 +99,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Query site settings
   const { data: dbSiteSettings } = useQuery({
     queryKey: ['siteSettings'],
     queryFn: async () => {
@@ -114,7 +112,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     },
   });
 
-  // Update site settings mutation
   const updateSiteSettings = useMutation({
     mutationFn: async (newSettings: any) => {
       const { error } = await supabase
@@ -140,7 +137,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     },
   });
 
-  // Projects queries and mutations
   const { data: dbProjects } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
@@ -189,7 +185,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     },
   });
 
-  // Certificates queries and mutations
   const { data: dbCertificates } = useQuery({
     queryKey: ['certificates'],
     queryFn: async () => {
@@ -269,12 +264,45 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
   const [newCertificateImage, setNewCertificateImage] = useState<string>("");
   const [activeTab, setActiveTab] = useState("appearance");
 
-  // Modified function to save settings and trigger site-wide update
+  useEffect(() => {
+    if (dbSiteSettings) {
+      const newSettings = { ...settings };
+      
+      if (dbSiteSettings.about_content) {
+        newSettings.about = {
+          ...newSettings.about,
+          content: dbSiteSettings.about_content
+        };
+      }
+      
+      if (dbSiteSettings.about_image) {
+        newSettings.about = {
+          ...newSettings.about,
+          image: dbSiteSettings.about_image
+        };
+      }
+      
+      if (dbSiteSettings.hero_title) {
+        newSettings.hero = {
+          ...newSettings.hero,
+          title: dbSiteSettings.hero_title
+        };
+      }
+      
+      if (dbSiteSettings.hero_subtitle) {
+        newSettings.hero = {
+          ...newSettings.hero,
+          subtitle: dbSiteSettings.hero_subtitle
+        };
+      }
+      
+      setSettings(newSettings);
+    }
+  }, [dbSiteSettings]);
+
   useEffect(() => {
     localStorage.setItem('siteSettings', JSON.stringify(settings));
-    // Force a storage event to notify other components
     window.dispatchEvent(new Event('storage'));
-    // Also dispatch custom event to ensure changes are picked up
     window.dispatchEvent(new Event('siteSettingsUpdated'));
   }, [settings]);
 
@@ -423,7 +451,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     });
   };
 
-  // Helper function to safely access nested properties
   const safelyAccess = (obj: any, path: string, defaultValue: any = '') => {
     const keys = path.split('.');
     let result = obj;
@@ -436,6 +463,27 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
     }
     
     return result === undefined || result === null ? defaultValue : result;
+  };
+
+  const handleSaveAboutContent = () => {
+    if (!dbSiteSettings?.id) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not save to database. Please try again later.",
+      });
+      return;
+    }
+    
+    updateSiteSettings({
+      about_content: settings.about.content,
+      about_image: settings.about.image,
+    });
+    
+    toast({
+      title: language === "en" ? "About Content Updated" : "تم تحديث محتوى حول",
+      description: language === "en" ? "Your about content has been saved" : "تم حفظ محتوى حول الخاص بك",
+    });
   };
 
   return (
@@ -505,7 +553,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
                   description: language === "en" ? "Your theme settings have been saved" : "تم حفظ إعدادات الثيم الخاصة بك",
                 });
                 
-                // Apply colors to :root CSS variables
                 document.documentElement.style.setProperty('--primary', safelyAccess(settings, 'theme.primary', "#9333ea"));
                 document.documentElement.style.setProperty('--secondary', safelyAccess(settings, 'theme.secondary', "#a855f7"));
                 document.documentElement.style.setProperty('--accent', safelyAccess(settings, 'theme.accent', "#c084fc"));
@@ -810,12 +857,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
             </div>
             
             <Button
-              onClick={() => {
-                toast({
-                  title: language === "en" ? "About Content Updated" : "تم تحديث محتوى حول",
-                  description: language === "en" ? "Your about content has been saved" : "تم حفظ محتوى حول الخاص بك",
-                });
-              }}
+              onClick={handleSaveAboutContent}
               style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
             >
               {language === "en" ? "Save About Content" : "حفظ محتوى حول"}

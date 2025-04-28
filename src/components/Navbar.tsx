@@ -72,7 +72,6 @@ export default function Navbar({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Get site settings for logo from localStorage if available
   const [siteSettings, setSiteSettings] = useState(() => {
     const saved = localStorage.getItem('siteSettings');
     return saved ? JSON.parse(saved) : {
@@ -96,7 +95,6 @@ export default function Navbar({
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("storage", handleSettingsChange);
     
-    // Check for settings changes periodically
     const interval = setInterval(() => {
       const saved = localStorage.getItem('siteSettings');
       if (saved) {
@@ -114,7 +112,6 @@ export default function Navbar({
     };
   }, [siteSettings]);
 
-  // Get primary color from site settings or use default
   const primaryColor = siteSettings?.theme?.primary || "#9333ea";
 
   return (
@@ -156,7 +153,6 @@ export default function Navbar({
           </span>
         </Link>
 
-        {/* Desktop Navigation - Now using NavigationMenu with custom active styles */}
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList>
@@ -188,15 +184,6 @@ export default function Navbar({
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleLanguage}
-              aria-label="Toggle Language"
-            >
-              <Languages className="h-5 w-5" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={toggleDarkMode}
               aria-label="Toggle Dark Mode"
             >
@@ -205,17 +192,7 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleLanguage}
-            aria-label="Toggle Language"
-          >
-            <Languages className="h-5 w-5" />
-          </Button>
-
           <Button
             variant="ghost"
             size="icon"
@@ -248,7 +225,6 @@ export default function Navbar({
           </Button>
         </div>
 
-        {/* Mobile Menu - Enhanced with icons */}
         <div className={cn(
           "fixed inset-x-0 top-[60px] p-4 bg-background/95 backdrop-blur-lg border-b border-border md:hidden transition-all duration-300 z-50 shadow-lg",
           isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"

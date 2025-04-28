@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SectionTitle from "@/components/SectionTitle";
@@ -33,7 +33,15 @@ const About = () => {
             <div className="relative rounded-lg overflow-hidden h-[400px]">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-primary rounded-lg transform rotate-3 scale-105"></div>
               <div className="absolute inset-1 bg-background rounded-lg flex items-center justify-center">
-                <div className="text-6xl">👨‍💻</div>
+                {siteSettings?.about_image ? (
+                  <img 
+                    src={siteSettings.about_image} 
+                    alt="About Me" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-6xl">👨‍💻</div>
+                )}
               </div>
             </div>
           </ScrollReveal>
