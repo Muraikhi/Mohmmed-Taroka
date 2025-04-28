@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -875,4 +876,106 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ language }) => {
               <Input 
                 id="contactEmail"
                 type="email"
-                value={saf
+                value={safelyAccess(settings, 'contact.email', "contact@example.com")} 
+                onChange={(e) => handleContactChange('email', e.target.value)}
+                placeholder={language === "en" ? "Enter email address" : "أدخل عنوان البريد الإلكتروني"}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="contactPhone">{language === "en" ? "Phone Number" : "رقم الهاتف"}</Label>
+              <Input 
+                id="contactPhone"
+                type="tel"
+                value={safelyAccess(settings, 'contact.phone', "+1234567890")} 
+                onChange={(e) => handleContactChange('phone', e.target.value)}
+                placeholder={language === "en" ? "Enter phone number" : "أدخل رقم الهاتف"}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="contactAddress">{language === "en" ? "Address" : "العنوان"}</Label>
+              <Textarea 
+                id="contactAddress"
+                value={safelyAccess(settings, 'contact.address', "123 Tech Street, Web City")} 
+                onChange={(e) => handleContactChange('address', e.target.value)}
+                placeholder={language === "en" ? "Enter address" : "أدخل العنوان"}
+                rows={2}
+              />
+            </div>
+            
+            <Button
+              onClick={() => {
+                toast({
+                  title: language === "en" ? "Contact Information Updated" : "تم تحديث معلومات الاتصال",
+                  description: language === "en" ? "Your contact information has been saved" : "تم حفظ معلومات الاتصال الخاصة بك",
+                });
+              }}
+              style={{ backgroundColor: safelyAccess(settings, 'theme.primary', "#9333ea") }}
+            >
+              {language === "en" ? "Save Contact Information" : "حفظ معلومات الاتصال"}
+            </Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      {/* Adding all the missing closing tags */}
+      <TabsContent value="images" className="space-y-6">
+        {/* Images tab content */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{language === "en" ? "Home Images" : "صور الصفحة الرئيسية"}</CardTitle>
+            <CardDescription>
+              {language === "en" 
+                ? "Add images to display on your home page" 
+                : "أضف صورًا لعرضها على صفحتك الرئيسية"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4">
+              {/* Home images content */}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="projects" className="space-y-6">
+        {/* Projects tab content */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{language === "en" ? "Projects" : "المشاريع"}</CardTitle>
+            <CardDescription>
+              {language === "en" 
+                ? "Manage your portfolio projects" 
+                : "إدارة مشاريع المحفظة الخاصة بك"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Projects content */}
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="certificates" className="space-y-6">
+        {/* Certificates tab content */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{language === "en" ? "Certificates" : "الشهادات"}</CardTitle>
+            <CardDescription>
+              {language === "en" 
+                ? "Manage your certificates and qualifications" 
+                : "إدارة شهاداتك ومؤهلاتك"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              {/* Certificates content */}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+};
+
+export default AdminDashboard;
