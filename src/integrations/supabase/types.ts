@@ -144,6 +144,7 @@ export type Database = {
       site_settings: {
         Row: {
           about_content: string
+          about_image: string | null
           created_at: string
           hero_subtitle: string
           hero_title: string
@@ -152,6 +153,7 @@ export type Database = {
         }
         Insert: {
           about_content: string
+          about_image?: string | null
           created_at?: string
           hero_subtitle: string
           hero_title: string
@@ -160,6 +162,7 @@ export type Database = {
         }
         Update: {
           about_content?: string
+          about_image?: string | null
           created_at?: string
           hero_subtitle?: string
           hero_title?: string
